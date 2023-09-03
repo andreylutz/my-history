@@ -44,7 +44,7 @@ export async function chatGPT(message = '') {
       model: CHAT_GPT_MODEL,
     });
 
-    console.log(completion.choices[0].message);
+    return completion.choices[0].message;
   } catch (error) {
     console.error('Error while chat completion', error.message);
   }

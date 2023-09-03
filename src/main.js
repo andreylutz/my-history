@@ -2,6 +2,7 @@ import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import config from 'config';
 import { chatGPT } from './chatgpt.js';
+import { create } from './notion.js';
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'), {
   /** Сколько по времени бот может ожидать ответа от сервера */
@@ -15,8 +16,19 @@ bot.command('start', (context) => {
 });
 
 bot.on(message('text'), async (context) => {
-  await chatGPT(context.message.text);
-  context.reply('test');
+  try {
+    const text = context.message.text;
+    if (!text.trim()) context.reply('Текст не может быть пустым');
+
+    const responseGPT = await chatGPT(text);
+    if (!responseGPT) return context.reply('Ошибка с API', responseGPT);
+
+    const notionResponse = await create(text, responseGPT.content);
+
+    context.reply(`Ваша страница: ${notionResponse.url}`);
+  } catch (error) {
+    console.log('Error while processing text:', error.message);
+  }
 });
 
 bot.launch();
