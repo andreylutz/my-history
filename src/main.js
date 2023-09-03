@@ -33,7 +33,7 @@ bot.on(message('text'), async (context) => {
     loader.hide();
 
     context.reply(responseGPT.content);
-    context.reply(`Ваша страница: ${notionResponse.url}`);
+    context.reply(`Ваша запись в note: ${notionResponse.url}`);
   } catch (error) {
     console.log('Error while processing text:', error.message);
   }
